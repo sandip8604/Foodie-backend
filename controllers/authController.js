@@ -86,7 +86,7 @@ exports.loginUser = async (req, res, next) => {
         email: user.email,
         usertype: user.usertype,
         profile: user.profile,
-        
+        userId: user.userId
       },
     });
 
