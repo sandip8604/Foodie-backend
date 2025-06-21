@@ -90,17 +90,6 @@ exports.loginUser = async (req, res, next) => {
       },
     });
 
-    // res.json({
-    //   message: 'Login successful',
-    //   statusCode: 200,
-    //   token,
-    //   user: {
-    //     userName: user.userName,
-    //     email: user.email,
-    //     usertype: user.usertype,
-    //     profile: user.profile,
-    //   },
-    // });
   } catch (error) {
     console.log(error);
 
