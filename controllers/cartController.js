@@ -16,6 +16,15 @@ exports.getCart = async (req, res) => {
 exports.addToCart = async (req, res) => {
   const { foodId, quantity } = req.body;
 
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const parsedQty = parseInt(quantity, 10);
+  if (!foodId || isNaN(parsedQty) || parsedQty < 1) {
+    return res.status(400).json({ message: "Invalid foodId or quantity" });
+  }
+
   try {
     let cart = await Cart.findOne({ user: req.user._id });
 
@@ -26,17 +35,23 @@ exports.addToCart = async (req, res) => {
     const itemIndex = cart.items.findIndex(item => item.food.toString() === foodId);
 
     if (itemIndex > -1) {
-      cart.items[itemIndex].quantity += quantity;
+
+      cart.items[itemIndex].quantity = parsedQty;
     } else {
-      cart.items.push({ food: foodId, quantity });
+      cart.items.push({ food: foodId, quantity: parsedQty });
     }
 
     await cart.save();
-    res.status(201).json(cart);
+    const populatedCart = await cart.populate('items.food');
+    res.status(201).json(populatedCart);
+
   } catch (error) {
-    res.status(500).json({ error, message: 'Failed to add to cart' });
+    console.error("Add to cart error:", error);
+    res.status(500).json({ message: 'Failed to add to cart' });
   }
 };
+
+
 
 // Remove =require(cart
 exports.removeFromCart = async (req, res) => {
