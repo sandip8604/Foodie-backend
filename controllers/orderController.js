@@ -1,12 +1,17 @@
-const Order=require('../models/Order.js');
-const Cart =require('../models/Cart.js');
-const Food =require('../models/Food.js');
+const Order = require('../models/Order.js');
+const Cart = require('../models/Cart.js');
+const Food = require('../models/Food.js');
 
 // Place order
 exports.placeOrder = async (req, res) => {
   const { restaurant, paymentMethod } = req.body;
 
+  if (!restaurant || !paymentMethod) {
+    return res.status(400).json({ message: 'Missing restaurant or payment method' });
+  }
+
   try {
+
     const cart = await Cart.findOne({ user: req.user._id }).populate('items.food');
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
@@ -28,8 +33,9 @@ exports.placeOrder = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    res.status(201).json(newOrder);
+    res.status(201).json({ message: "Order placed", order: newOrder });
   } catch (error) {
+    console.error("Order placement error:", error);
     res.status(500).json({ message: 'Failed to place order' });
   }
 };
