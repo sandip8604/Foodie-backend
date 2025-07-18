@@ -7,4 +7,5 @@ const router = express.Router();
 router.route('/profile').get(protect, getProfile).put(protect, updateProfile);
 router.route('/').get(protect, admin, getAllUsers);
 
+
 module.exports = router;
